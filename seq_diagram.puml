@@ -1,0 +1,39 @@
+@startuml
+title Sinanai
+' anything with a 'gu' suffix is user-facing
+actor User
+participant "lgu: LoginUI" as lgu
+' behind the scenes script
+participant "authEngine: LoginService" as auth
+participant "fIn:\nFileInputStream" as fIn
+participant "objIn:\nObjectInputStream" as objIn
+participant "mgu: MainUI" as mgu
+participant "expense:\nExpense" as exp
+participant "user: User" as user
+
+User -> lgu: new()
+lgu -> auth: login(username, password)
+activate auth
+    auth -> fIn: new("data.ser")
+    auth -> objIn: new(fIn)
+    auth -> auth: findUser(username, password)
+    activate auth
+    auth --> auth: result
+    deactivate auth
+
+' authentication handles all the database operations
+alt user is valid
+    auth -> mgu: show()
+else invalid credentials
+    activate mgu
+    auth -> User: "Invalid credentials"
+    User -> mgu: addExpense(amount,category)
+    mgu -> exp: new(amount, category, date)
+    ' add expense to list
+    mgu -> user: addExpense(expense)
+    mgu --> User: "expense added"
+    deactivate mgu
+end
+deactivate auth
+
+@enduml
