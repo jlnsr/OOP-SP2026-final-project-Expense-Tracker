@@ -1,5 +1,5 @@
 @startuml
-title Sinanai
+title Add Expense
 ' anything with a 'gu' suffix is user-facing
 actor User
 participant "lgu: LoginUI" as lgu
